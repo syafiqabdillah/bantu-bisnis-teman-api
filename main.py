@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 from dotenv import load_dotenv
 from datetime import datetime
+import auth
 import db 
 
 load_dotenv()
@@ -26,17 +27,80 @@ def users():
             'message': 'server error'
         }), 500 
 
+@app.route('/toko/<user_id>', methods=['GET'])
+def toko(user_id):
+    try:
+        toko = db.get_toko(user_id)
+        return jsonify({
+            'data': toko,
+            'message': 'success'
+        }), 200
+    except Exception as e:
+        print(e)
+        return jsonify({
+            'message': 'server error'
+        }), 500 
+
+@app.route('/update-toko', methods=['POST'])
+@cross_origin()
+def update_toko():
+    data = request.json
+    toko_id = data['toko_id']
+    nama = data['nama']
+    alamat = data['alamat']
+    nohp = data['nohp']
+    shopee = data['shopee']
+    tokopedia = data['tokopedia']
+    instagram = data['instagram']
+    query_result = db.update_toko(toko_id, nama, alamat, nohp, shopee, tokopedia, instagram)
+    message = query_result['message']
+    if message == 'success':
+        return jsonify({
+            'message': "update success",
+        }), 200
+    else:
+        return jsonify({
+            'message': "update failed",
+        }), 500
+
+@app.route('/add-product', methods=['POST'])
+@cross_origin()
+def add_product():
+    data = request.json
+    toko_id = data['toko_id']
+    nama = data['nama']
+    harga = data['harga']
+    imageUrl = data['imageUrl']
+    query_result = db.add_product(toko_id, nama, harga, imageUrl)
+    message = query_result['message']
+    if message == "success":
+        data['product_id'] = query_result['product_id']
+        return jsonify(data), 201
+    else:
+        return jsonify(query_result), 500
+
+
 @app.route('/register', methods=['POST'])
 @cross_origin()
 def register():
     data = request.json
     nama = data['nama']
     email = data['email']
-    query_result = db.register(nama, email)
+    password = data['password']
+    query_result = db.register(nama, email, password)
     message = query_result['message']
     returning_data = query_result['data']
     if message == 'success':
-        return jsonify(query_result), 200
+        result = {
+            'nama': nama,
+            'email': email,
+            'user_id': query_result['data']['user_id'],
+            'toko_id': query_result['data']['toko_id']
+        }
+        return jsonify({
+            'message': message,
+            'jwt': auth.create_jwt(result).decode()
+        }), 200
     else:
         return jsonify({
             'message': message,
@@ -49,10 +113,12 @@ def login():
     email = data['email']
     password = data['password']
     try:
-        message = db.login(email, password)['message']
+        result = db.login(email, password)
+        message = result['message']
         if message == 'success':
             return jsonify({
-                'message': 'login success'
+                'message': 'login success',
+                'jwt': auth.create_jwt(result).decode()
             }), 200
         else:
             return jsonify({
@@ -65,4 +131,4 @@ def login():
         }), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')

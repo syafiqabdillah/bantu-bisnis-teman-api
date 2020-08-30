@@ -68,18 +68,18 @@ def get_all_users():
     return result
 
 # REGISTER
-def register(nama, email):
-    # generate random password 
-    random_string, hashed_password = generate_password()
+def register(nama, email, password):
+    hashed_password = hash_password(password);
     try:
         query = "insert into users(nama, email, password) values (%s, %s, %s) returning id"
         value = (nama, email, hashed_password)
-        user_id = execute_post(query, value)
+        user_id = execute_post(query, value)['data']['returning_id']
+        toko_id = create_new_store(user_id)['data']['returning_id'] # creating new store to the user
         return {
             'message': 'success',
             'data': {
-                'id': user_id,
-                'random_string': random_string
+                'user_id': user_id,
+                'toko_id': toko_id,
             }
         }
     except Exception as e:
@@ -87,25 +87,93 @@ def register(nama, email):
             'message': 'failed',
         }
 
+def create_new_store(user_id):
+    try:
+        query = "insert into toko(user_id, nama, alamat, nohp, shopee, tokopedia, instagram) values (%s, '-', '-', '-', '-', '-', '-' ) returning id"
+        value = (user_id,)
+        toko_id = execute_post(query, value)
+        return toko_id
+    except Exception as e:
+        return 0
+
+# TOKO
+def update_toko(toko_id, nama, alamat, nohp, shopee, tokopedia, instagram):
+    try:
+        query = """
+                update toko set nama=%s, alamat=%s, nohp=%s, shopee=%s, tokopedia=%s, instagram=%s where id=%s returning id
+                """
+        value = (nama, alamat, nohp, shopee, tokopedia, instagram, toko_id)
+        toko_id = execute_post(query, value)
+        return {
+            "message": "success"
+        }
+    except Exception as e:
+        print(e)
+        return {
+            "message": "failed"
+        }
+
+def get_toko(user_id):
+    query = """
+            select * from toko where user_id=%s
+            """
+    toko = execute_get(query, (user_id))[0]
+
+    return {
+        "nama": toko[2],
+        "alamat": toko[3],
+        "nohp": toko[4],
+        "shopee": toko[5],
+        "tokopedia": toko[6],
+        "instagram": toko[7]
+    }
+
+def add_product(toko_id, nama, harga, imageUrl):
+    try:
+        query = """
+                insert into produk (toko_id, nama, harga, imageUrl)
+                values (%s, %s, %s, %s) returning id
+                """
+        value = (toko_id, nama, harga, imageUrl)
+        product_id = execute_post(query, value)
+        return {
+            "message": "success",
+            "product_id": product_id
+        }
+    except Exception as e:
+        return {
+            "message": "failed"
+        }
+
 # LOGIN
 def login(email, password):
-    query = "select password from users where email=%s"
+    query = """
+            select users.password, users.nama, users.email, users.id, toko.id
+            from users join toko on users.id=toko.user_id
+            where users.email=%s
+            """
     val = (email, )
-    hashed = execute_get(query, val)[0][0].encode()
+    result = execute_get(query, val)[0]
+    hashed = result[0].encode()
+    nama = result[1]
+    email = result[2]
+    user_id = result[3]
+    toko_id = result[4]
     if password_matches(password, hashed):
         return {
-            'message': 'success'
+            'message': 'success',
+            'nama': nama,
+            'email': email,
+            'user_id': user_id,
+            'toko_id': toko_id
         }
     else :
         return {
             'message': 'failed'
         }
 
-def generate_password(length=10):
-    letters = string.ascii_letters
-    random_string = ''.join(random.choice(letters) for i in range(length))
-    hashed_password = bcrypt.hashpw(random_string.encode(), bcrypt.gensalt()).decode()
-    return random_string, hashed_password
+def hash_password(password):
+    return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
 
 def password_matches(password, hashed):
     return bcrypt.checkpw(password.encode(), hashed)
