@@ -145,6 +145,41 @@ def add_product(toko_id, nama, harga, imageUrl):
             "message": "failed"
         }
 
+def products(toko_id):
+    try:
+        query = """
+                select id, nama, harga, imageUrl from produk where toko_id=%s
+                """
+        products = execute_get(query, (toko_id,))
+        results = [{
+            "id": product[0],
+            "nama": product[1],
+            "harga": str(product[2]),
+            "imageUrl": product[3]
+        } for product in products]
+        return results
+    except Exception as e:
+        return None
+
+def all_products():
+    try:
+        query = """
+                select produk.id, produk.nama, produk.harga, produk.imageUrl, toko.nama 
+                from toko join produk 
+                on toko.id=produk.toko_id
+                """
+        products = execute_get(query, ())
+        results = [{
+            "id": product[0],
+            "namaProduk": product[1],
+            "harga": str(product[2]),
+            "imageUrl": product[3],
+            "namaToko": product[4]
+        } for product in products]
+        return results
+    except Exception as e:
+        return None
+
 # LOGIN
 def login(email, password):
     query = """

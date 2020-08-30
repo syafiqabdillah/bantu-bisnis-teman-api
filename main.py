@@ -63,6 +63,8 @@ def update_toko():
             'message': "update failed",
         }), 500
 
+# PRODUCT 
+
 @app.route('/add-product', methods=['POST'])
 @cross_origin()
 def add_product():
@@ -79,6 +81,31 @@ def add_product():
     else:
         return jsonify(query_result), 500
 
+@app.route('/products/<toko_id>', methods=['GET'])
+def products(toko_id):
+    try:
+        product_list = db.products(toko_id)
+        return jsonify({
+            'data': product_list,
+            'message': 'success'
+        }), 200
+    except Exception as e:
+        return jsonify({
+            'message': 'server error'
+        }), 500 
+
+@app.route('/products', methods=['GET'])
+def all_products():
+    try:
+        product_list = db.all_products()
+        return jsonify({
+            'data': product_list,
+            'message': 'success'
+        }), 200
+    except Exception as e:
+        return jsonify({
+            'message': 'server error'
+        }), 500
 
 @app.route('/register', methods=['POST'])
 @cross_origin()
