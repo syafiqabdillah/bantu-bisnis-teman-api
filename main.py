@@ -74,10 +74,8 @@ def add_product():
     harga = data['harga']
     imageUrl = data['imageUrl']
     query_result = db.add_product(toko_id, nama, harga, imageUrl)
-    message = query_result['message']
-    if message == "success":
-        data['product_id'] = query_result['product_id']
-        return jsonify(data), 201
+    if query_result['message'] == "success":
+        return jsonify(query_result), 201
     else:
         return jsonify(query_result), 500
 
@@ -107,12 +105,31 @@ def all_products():
             'message': 'server error'
         }), 500
 
+# KATEGORI
 @app.route('/add-kategori', methods=['POST'])
 @cross_origin()
 def add_kategori():
     data = request.json
     nama = data['nama']
-    
+    query_result = db.add_kategori(nama)
+    print(query_result)
+    if query_result['message'] == "success":
+        return jsonify(query_result), 201
+    else:
+        return jsonify(query_result), 500
+
+@app.route("/kategori", methods=['GET'])
+def kategori():
+    try:
+        list_kategori = db.kategori()
+        return jsonify({
+            "data": list_kategori,
+            "message": "success"
+        })
+    except:
+        return jsonify({
+            "message": "failed"
+        })
 
 @app.route('/register', methods=['POST'])
 @cross_origin()

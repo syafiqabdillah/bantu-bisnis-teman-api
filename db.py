@@ -128,22 +128,33 @@ def get_toko(user_id):
         "instagram": toko[7]
     }
 
+# KATEGORI
+def add_kategori(nama):
+    query = "insert into kategori (nama) values (%s) returning id"
+    value = (nama,)
+    kategori = execute_post(query, value)
+    return kategori
+
+def kategori():
+    query = "select * from kategori"
+    list_kategori = execute_get(query, ())
+    objected_list_kategori = [
+        {
+            'id': kat[0],
+            'nama': kat[1]
+        }
+    for kat in list_kategori]
+    return objected_list_kategori
+
+# PRODUCT
 def add_product(toko_id, nama, harga, imageUrl):
-    try:
-        query = """
-                insert into produk (toko_id, nama, harga, imageUrl)
-                values (%s, %s, %s, %s) returning id
-                """
-        value = (toko_id, nama, harga, imageUrl)
-        product_id = execute_post(query, value)
-        return {
-            "message": "success",
-            "product_id": product_id
-        }
-    except Exception as e:
-        return {
-            "message": "failed"
-        }
+    query = """
+            insert into produk (toko_id, nama, harga, imageUrl)
+            values (%s, %s, %s, %s) returning id
+            """
+    value = (toko_id, nama, harga, imageUrl)
+    query_result = execute_post(query, value)
+    return query_result
 
 def products(toko_id):
     try:
