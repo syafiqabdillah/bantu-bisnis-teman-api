@@ -107,6 +107,13 @@ def all_products():
             'message': 'server error'
         }), 500
 
+@app.route('/add-kategori', methods=['POST'])
+@cross_origin()
+def add_kategori():
+    data = request.json
+    nama = data['nama']
+    
+
 @app.route('/register', methods=['POST'])
 @cross_origin()
 def register():
