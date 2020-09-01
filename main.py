@@ -84,10 +84,11 @@ def update_toko():
 def add_product():
     data = request.json
     toko_id = data['toko_id']
+    kategori_id = data['kategori_id']
     nama = data['nama']
     harga = data['harga']
     imageUrl = data['imageUrl']
-    query_result = db.add_product(toko_id, nama, harga, imageUrl)
+    query_result = db.add_product(toko_id, kategori_id, nama, harga, imageUrl)
     if query_result['message'] == "success":
         return jsonify(query_result), 201
     else:
@@ -123,6 +124,23 @@ def all_products():
 def search_products(search_query):
     try:
         product_list = db.search_products(search_query)
+        return jsonify({
+            'data': product_list,
+            'message': 'success'
+        }), 200
+    except Exception as e:
+        print(e)
+        return jsonify({
+            'message': 'server error'
+        }), 500
+
+@app.route('/search-products-by-category/<kategori_id>', methods=['GET'])
+def search_products_by_category(kategori_id):
+    try:
+        if kategori_id != "0":
+            product_list = db.search_products_by_category(kategori_id)
+        else:
+            product_list = db.all_products()
         return jsonify({
             'data': product_list,
             'message': 'success'

@@ -7,6 +7,7 @@ import uuid
 import string 
 import random 
 import bcrypt
+import time 
 
 load_dotenv()
 
@@ -162,12 +163,12 @@ def kategori():
     return objected_list_kategori
 
 # PRODUCT
-def add_product(toko_id, nama, harga, imageUrl):
+def add_product(toko_id, kategori_id, nama, harga, imageUrl):
     query = """
-            insert into produk (toko_id, nama, harga, imageUrl)
-            values (%s, %s, %s, %s) returning id
+            insert into produk (toko_id, kategori_id, nama, harga, imageUrl)
+            values (%s, %s, %s, %s, %s) returning id
             """
-    value = (toko_id, nama, harga, imageUrl)
+    value = (toko_id, kategori_id, nama, harga, imageUrl)
     query_result = execute_post(query, value)
     return query_result
 
@@ -204,7 +205,8 @@ def all_products():
             "imageUrl": product[3],
             "namaToko": product[4],
             "idToko": product[5],
-            "namaSeller": product[6]
+            "namaSeller": product[6],
+            "key": product[0] + int(time.time())
         } for product in products]
         return results
     except Exception as e:
@@ -231,7 +233,33 @@ def search_products(search_query):
             "imageUrl": product[3],
             "namaToko": product[4],
             "idToko": product[5],
-            "namaSeller": product[6]
+            "namaSeller": product[6],
+            "key": product[0] + int(time.time())
+        } for product in products]
+        return results
+    except Exception as e:
+        return None
+
+def search_products_by_category(kategori_id):
+    try:
+        query = """
+                select produk.id, produk.nama, produk.harga, produk.imageUrl, toko.nama, toko.id, users.nama 
+                from users join toko on users.id = toko.user_id
+                join produk on toko.id=produk.toko_id
+                where produk.kategori_id=%s
+                order by random()
+                limit 20
+                """
+        products = execute_get(query, (kategori_id, ))
+        results = [{
+            "id": product[0],
+            "namaProduk": product[1],
+            "harga": str(product[2]),
+            "imageUrl": product[3],
+            "namaToko": product[4],
+            "idToko": product[5],
+            "namaSeller": product[6],
+            "key": product[0] + int(time.time())
         } for product in products]
         return results
     except Exception as e:
