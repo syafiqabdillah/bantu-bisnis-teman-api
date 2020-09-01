@@ -128,6 +128,21 @@ def get_toko(user_id):
         "instagram": toko[7]
     }
 
+def kontak_toko(toko_id):
+    query = """
+            select * from toko where id=%s
+            """
+    detail = execute_get(query, (toko_id,))[0]
+    return {
+        "id": detail[0],
+        "nama": detail[2],
+        "alamat": detail[3],
+        "nohp": detail[4],
+        "shopee": detail[5],
+        "tokopedia": detail[6],
+        "instagram": detail[7]
+    }
+
 # KATEGORI
 def add_kategori(nama):
     query = "insert into kategori (nama) values (%s) returning id"
@@ -175,9 +190,11 @@ def products(toko_id):
 def all_products():
     try:
         query = """
-                select produk.id, produk.nama, produk.harga, produk.imageUrl, toko.nama 
-                from toko join produk 
-                on toko.id=produk.toko_id
+                select produk.id, produk.nama, produk.harga, produk.imageUrl, toko.nama, toko.id, users.nama 
+                from users join toko on users.id = toko.user_id
+                join produk on toko.id=produk.toko_id
+                order by random()
+                limit 10
                 """
         products = execute_get(query, ())
         results = [{
@@ -185,7 +202,9 @@ def all_products():
             "namaProduk": product[1],
             "harga": str(product[2]),
             "imageUrl": product[3],
-            "namaToko": product[4]
+            "namaToko": product[4],
+            "idToko": product[5],
+            "namaSeller": product[6]
         } for product in products]
         return results
     except Exception as e:
