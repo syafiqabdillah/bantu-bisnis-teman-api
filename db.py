@@ -210,6 +210,33 @@ def all_products():
     except Exception as e:
         return None
 
+def search_products(search_query):
+    try:
+        query = """
+                select produk.id, produk.nama, produk.harga, produk.imageUrl, toko.nama, toko.id, users.nama 
+                from users join toko on users.id = toko.user_id
+                join produk on toko.id=produk.toko_id
+                where lower(produk.nama) like %s 
+                or lower(toko.nama) like %s 
+                or lower(users.nama) like %s
+                order by random()
+                limit 20
+                """
+        search = f'%{search_query}%'
+        products = execute_get(query, (search, search, search))
+        results = [{
+            "id": product[0],
+            "namaProduk": product[1],
+            "harga": str(product[2]),
+            "imageUrl": product[3],
+            "namaToko": product[4],
+            "idToko": product[5],
+            "namaSeller": product[6]
+        } for product in products]
+        return results
+    except Exception as e:
+        return None
+
 # LOGIN
 def login(email, password):
     query = """

@@ -119,6 +119,20 @@ def all_products():
             'message': 'server error'
         }), 500
 
+@app.route('/search-products/<search_query>', methods=['GET'])
+def search_products(search_query):
+    try:
+        product_list = db.search_products(search_query)
+        return jsonify({
+            'data': product_list,
+            'message': 'success'
+        }), 200
+    except Exception as e:
+        print(e)
+        return jsonify({
+            'message': 'server error'
+        }), 500
+
 # KATEGORI
 @app.route('/add-kategori', methods=['POST'])
 @cross_origin()
