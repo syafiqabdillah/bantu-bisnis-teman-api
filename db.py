@@ -69,8 +69,14 @@ def get_all_users():
     return result
 
 # REGISTER
+def email_available(email):
+    query = "select nama from users where email=%s"
+    value = (email, )
+    lst = execute_get(query, value)
+    return len(lst) < 1
+
 def register(nama, email, password):
-    hashed_password = hash_password(password);
+    hashed_password = hash_password(password)
     try:
         query = "insert into users(nama, email, password) values (%s, %s, %s) returning id"
         value = (nama, email, hashed_password)

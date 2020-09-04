@@ -193,6 +193,15 @@ def kategori():
             "message": "failed"
         })
 
+@app.route('/email-available', methods=['POST'])
+@cross_origin()
+def email_available():
+    data = request.json
+    query_result = db.email_available(data['email'])
+    return jsonify({
+        "email_available": query_result 
+    })
+
 @app.route('/register', methods=['POST'])
 @cross_origin()
 def register():
