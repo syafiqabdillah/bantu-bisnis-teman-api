@@ -175,14 +175,16 @@ def add_product(toko_id, kategori_id, nama, harga, imageUrl):
 def products(toko_id):
     try:
         query = """
-                select id, nama, harga, imageUrl from produk where toko_id=%s
+                select id, nama, harga, imageUrl, status, kategori_id from produk where toko_id=%s
                 """
         products = execute_get(query, (toko_id,))
         results = [{
             "id": product[0],
             "nama": product[1],
             "harga": str(product[2]),
-            "imageUrl": product[3]
+            "imageUrl": product[3],
+            "status": product[4],
+            "kategori_id": product[5]
         } for product in products]
         return results
     except Exception as e:
