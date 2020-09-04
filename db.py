@@ -172,6 +172,15 @@ def add_product(toko_id, kategori_id, nama, harga, imageUrl):
     query_result = execute_post(query, value)
     return query_result
 
+def update_product(produk_id, nama, kategori_id, harga, imageUrl, status):
+    query = """
+            update produk set nama=%s, kategori_id=%s, harga=%s, imageUrl=%s, status=%s
+            where id=%s returning id 
+            """
+    value = (nama, kategori_id, harga, imageUrl, status, produk_id)
+    query_result = execute_post(query, value)
+    return query_result
+
 def products(toko_id):
     try:
         query = """

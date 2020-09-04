@@ -94,6 +94,22 @@ def add_product():
     else:
         return jsonify(query_result), 500
 
+@app.route('/update-product', methods=['POST'])
+@cross_origin()
+def update_product():
+    data = request.json
+    produk_id = data['id']
+    nama = data['nama']
+    kategori_id = data['kategori_id']
+    harga = data['harga']
+    imageUrl = data['imageUrl']
+    status = data['status']
+    query_result = db.update_product(produk_id, nama, kategori_id, harga, imageUrl, status)
+    if query_result['message'] == "success":
+        return jsonify(query_result), 201
+    else:
+        return jsonify(query_result), 500
+
 @app.route('/products/<toko_id>', methods=['GET'])
 def products(toko_id):
     try:
