@@ -205,6 +205,7 @@ def all_products():
                 select produk.id, produk.nama, produk.harga, produk.imageUrl, toko.nama, toko.id, users.nama 
                 from users join toko on users.id = toko.user_id
                 join produk on toko.id=produk.toko_id
+                where produk.status='active'
                 order by random()
                 limit 10
                 """
