@@ -310,6 +310,17 @@ def login(email, password):
             'message': 'failed'
         }
 
+def get_view_sum(produk_id):
+    query = "select count(1) from produk_view where produk_id=%s"
+    value = (produk_id, )
+    view_sum = execute_get(query, value)[0][0]
+    return view_sum
+
+def add_view(produk_id):
+    query = "insert into produk_view(produk_id, timestamp) values (%s, %s) returning id"
+    value = (produk_id, datetime.datetime.now())
+    return execute_post(query, value)
+
 def hash_password(password):
     return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
 

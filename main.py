@@ -252,5 +252,24 @@ def login():
             'message': 'server error'
         }), 500
 
+# Product view 
+
+@app.route('/view-sum/<produk_id>', methods=['GET'])
+def get_view_sum(produk_id):
+    view_sum = db.get_view_sum(produk_id)
+    return jsonify({
+        'produk_id': produk_id,
+        'view_sum': view_sum
+    })
+
+@app.route('/add-view/<produk_id>', methods=['POST'])
+@cross_origin()
+def add_view(produk_id):
+    query_result = db.add_view(produk_id)
+    if query_result['message'] == 'success':
+        return jsonify(query_result), 200
+    else:
+        return jsonify(query_result), 500
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
