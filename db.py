@@ -4,17 +4,18 @@ import datetime
 from dotenv import load_dotenv
 import json
 import uuid
-import string 
-import random 
+import string
+import random
 import bcrypt
-import time 
+import time
 
 load_dotenv()
 
-DB_HOST=os.getenv('DB_HOST')
-DB_NAME=os.getenv('DB_NAME')
-DB_USER=os.getenv('DB_USER')
-DB_PASS=os.getenv('DB_PASS')
+DB_HOST = os.getenv('DB_HOST')
+DB_NAME = os.getenv('DB_NAME')
+DB_USER = os.getenv('DB_USER')
+DB_PASS = os.getenv('DB_PASS')
+
 
 def execute_get(query, val):
     connection = psycopg2.connect(
@@ -30,7 +31,9 @@ def execute_get(query, val):
     connection.close()
     return result
 
-## query must include RETURNING ID in the end 
+# query must include RETURNING ID in the end
+
+
 def execute_post(query, val):
     try:
         connection = psycopg2.connect(
@@ -56,7 +59,9 @@ def execute_post(query, val):
             'message': 'failed'
         }
 
-# USERS 
+# USERS
+
+
 def get_all_users():
     query = """
             select * from users
@@ -69,11 +74,14 @@ def get_all_users():
     return result
 
 # REGISTER
+
+
 def email_available(email):
     query = "select nama from users where email=%s"
     value = (email, )
     lst = execute_get(query, value)
     return len(lst) < 1
+
 
 def register(nama, email, password):
     hashed_password = hash_password(password)
@@ -81,7 +89,8 @@ def register(nama, email, password):
         query = "insert into users(nama, email, password) values (%s, %s, %s) returning id"
         value = (nama, email, hashed_password)
         user_id = execute_post(query, value)['data']['returning_id']
-        toko_id = create_new_store(user_id)['data']['returning_id'] # creating new store to the user
+        # creating new store to the user
+        toko_id = create_new_store(user_id)['data']['returning_id']
         return {
             'message': 'success',
             'data': {
@@ -94,6 +103,7 @@ def register(nama, email, password):
             'message': 'failed',
         }
 
+
 def create_new_store(user_id):
     try:
         query = "insert into toko(user_id, nama, alamat, nohp, shopee, tokopedia, instagram) values (%s, '-', '-', '-', '-', '-', '-' ) returning id"
@@ -104,6 +114,8 @@ def create_new_store(user_id):
         return 0
 
 # TOKO
+
+
 def update_toko(toko_id, nama, alamat, nohp, shopee, tokopedia, instagram):
     try:
         query = """
@@ -120,6 +132,7 @@ def update_toko(toko_id, nama, alamat, nohp, shopee, tokopedia, instagram):
             "message": "failed"
         }
 
+
 def get_toko(user_id):
     query = """
             select * from toko where user_id=%s
@@ -134,6 +147,7 @@ def get_toko(user_id):
         "tokopedia": toko[6],
         "instagram": toko[7]
     }
+
 
 def kontak_toko(toko_id):
     query = """
@@ -151,11 +165,14 @@ def kontak_toko(toko_id):
     }
 
 # KATEGORI
+
+
 def add_kategori(nama):
     query = "insert into kategori (nama) values (%s) returning id"
     value = (nama,)
     kategori = execute_post(query, value)
     return kategori
+
 
 def kategori():
     query = "select * from kategori"
@@ -165,10 +182,12 @@ def kategori():
             'id': kat[0],
             'nama': kat[1]
         }
-    for kat in list_kategori]
+        for kat in list_kategori]
     return objected_list_kategori
 
 # PRODUCT
+
+
 def add_product(toko_id, kategori_id, nama, harga, imageUrl):
     query = """
             insert into produk (toko_id, kategori_id, nama, harga, imageUrl)
@@ -178,6 +197,7 @@ def add_product(toko_id, kategori_id, nama, harga, imageUrl):
     query_result = execute_post(query, value)
     return query_result
 
+
 def update_product(produk_id, nama, kategori_id, harga, imageUrl, status):
     query = """
             update produk set nama=%s, kategori_id=%s, harga=%s, imageUrl=%s, status=%s
@@ -186,6 +206,7 @@ def update_product(produk_id, nama, kategori_id, harga, imageUrl, status):
     value = (nama, kategori_id, harga, imageUrl, status, produk_id)
     query_result = execute_post(query, value)
     return query_result
+
 
 def products(toko_id):
     try:
@@ -204,6 +225,7 @@ def products(toko_id):
         return results
     except Exception as e:
         return None
+
 
 def all_products():
     try:
@@ -229,6 +251,7 @@ def all_products():
         return results
     except Exception as e:
         return None
+
 
 def search_products(search_query):
     try:
@@ -258,6 +281,7 @@ def search_products(search_query):
     except Exception as e:
         return None
 
+
 def search_products_by_category(kategori_id):
     try:
         query = """
@@ -284,6 +308,8 @@ def search_products_by_category(kategori_id):
         return None
 
 # LOGIN
+
+
 def login(email, password):
     query = """
             select users.password, users.nama, users.email, users.id, toko.id
@@ -305,10 +331,11 @@ def login(email, password):
             'user_id': user_id,
             'toko_id': toko_id
         }
-    else :
+    else:
         return {
             'message': 'failed'
         }
+
 
 def get_view_sum(produk_id):
     query = "select count(1) from produk_view where produk_id=%s"
@@ -316,13 +343,16 @@ def get_view_sum(produk_id):
     view_sum = execute_get(query, value)[0][0]
     return view_sum
 
+
 def add_view(produk_id):
     query = "insert into produk_view(produk_id, timestamp) values (%s, %s) returning id"
     value = (produk_id, datetime.datetime.now())
     return execute_post(query, value)
 
+
 def hash_password(password):
     return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+
 
 def password_matches(password, hashed):
     return bcrypt.checkpw(password.encode(), hashed)
