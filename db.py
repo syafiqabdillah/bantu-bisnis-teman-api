@@ -54,7 +54,7 @@ def execute_post(query, val):
                 'returning_id': returning_id
             }
         }
-    except Exception as e:
+    except:
         return {
             'message': 'failed'
         }
@@ -64,14 +64,22 @@ def execute_post(query, val):
 
 def get_all_users():
     query = """
-            select * from users
+            select id, nama, email, active from users
             """
     lst = execute_get(query, ())
-    result = []
-    for item in lst:
-        print(item)
-        result.append(item)
+    result = [{
+        'id': user[0],
+        'nama': user[1],
+        'email': user[2],
+        'active': user[3]
+    } for user in lst]
     return result
+
+def update_user(email, active):
+    query = "update users set active=%s where email=%s returning id"
+    value = (active, email)
+    result_query = execute_post(query, value)
+    return result_query
 
 # REGISTER
 
@@ -110,7 +118,7 @@ def create_new_store(user_id):
         value = (user_id,)
         toko_id = execute_post(query, value)
         return toko_id
-    except Exception as e:
+    except:
         return 0
 
 # TOKO

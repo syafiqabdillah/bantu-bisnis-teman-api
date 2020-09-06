@@ -3,29 +3,49 @@ from flask_cors import CORS, cross_origin
 from dotenv import load_dotenv
 from datetime import datetime
 import auth
-import db 
+import db
 
 load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
 
+
 @app.route('/', methods=['GET'])
 def hello():
     return "Hello, are you trying to hack this ? pls don't"
 
-@app.route('/users', methods=['GET'])
-def users():
-    try:
-        users_list = db.get_all_users()
+
+@app.route('/users/<token>', methods=['GET'])
+@cross_origin()
+def users(token):
+    if token and auth.read_jwt(token)['email'] == "syafiq.abdillah@ui.ac.id":
+        try:
+            users_list = db.get_all_users()
+            return jsonify({
+                'data': users_list,
+                'message': 'success'
+            }), 200
+        except:
+            return jsonify({
+                'message': 'server error'
+            }), 500
+    else:
         return jsonify({
-            'data': users_list,
-            'message': 'success'
-        }), 200
-    except:
-        return jsonify({
-            'message': 'server error'
-        }), 500 
+            'message': 'unauthorized'
+        }), 430
+
+@app.route('/update-user-status', methods=['POST'])
+@cross_origin()
+def update_user():
+    data = request.json
+    email = data['email']
+    active = data['active']
+    result_query = db.update_user(email, active)
+    if result_query['message'] == 'success':
+        return jsonify(result_query), 200
+    else:
+        return jsonify(result_query), 500
 
 @app.route('/toko/<user_id>', methods=['GET'])
 def toko(user_id):
@@ -39,7 +59,8 @@ def toko(user_id):
         print(e)
         return jsonify({
             'message': 'server error'
-        }), 500 
+        }), 500
+
 
 @app.route('/kontak-toko/<toko_id>', methods=['GET'])
 def kontak_toko(toko_id):
@@ -53,7 +74,8 @@ def kontak_toko(toko_id):
         print(e)
         return jsonify({
             'message': 'server error'
-        }), 500 
+        }), 500
+
 
 @app.route('/update-toko', methods=['POST'])
 @cross_origin()
@@ -66,7 +88,8 @@ def update_toko():
     shopee = data['shopee']
     tokopedia = data['tokopedia']
     instagram = data['instagram']
-    query_result = db.update_toko(toko_id, nama, alamat, nohp, shopee, tokopedia, instagram)
+    query_result = db.update_toko(
+        toko_id, nama, alamat, nohp, shopee, tokopedia, instagram)
     message = query_result['message']
     if message == 'success':
         return jsonify({
@@ -77,7 +100,8 @@ def update_toko():
             'message': "update failed",
         }), 500
 
-# PRODUCT 
+# PRODUCT
+
 
 @app.route('/add-product', methods=['POST'])
 @cross_origin()
@@ -94,6 +118,7 @@ def add_product():
     else:
         return jsonify(query_result), 500
 
+
 @app.route('/update-product', methods=['POST'])
 @cross_origin()
 def update_product():
@@ -104,11 +129,13 @@ def update_product():
     harga = data['harga']
     imageUrl = data['imageUrl']
     status = data['status']
-    query_result = db.update_product(produk_id, nama, kategori_id, harga, imageUrl, status)
+    query_result = db.update_product(
+        produk_id, nama, kategori_id, harga, imageUrl, status)
     if query_result['message'] == "success":
         return jsonify(query_result), 201
     else:
         return jsonify(query_result), 500
+
 
 @app.route('/products/<toko_id>', methods=['GET'])
 def products(toko_id):
@@ -121,7 +148,8 @@ def products(toko_id):
     except Exception as e:
         return jsonify({
             'message': 'server error'
-        }), 500 
+        }), 500
+
 
 @app.route('/products', methods=['GET'])
 def all_products():
@@ -136,6 +164,7 @@ def all_products():
             'message': 'server error'
         }), 500
 
+
 @app.route('/search-products/<search_query>', methods=['GET'])
 def search_products(search_query):
     try:
@@ -149,6 +178,7 @@ def search_products(search_query):
         return jsonify({
             'message': 'server error'
         }), 500
+
 
 @app.route('/search-products-by-category/<kategori_id>', methods=['GET'])
 def search_products_by_category(kategori_id):
@@ -168,6 +198,8 @@ def search_products_by_category(kategori_id):
         }), 500
 
 # KATEGORI
+
+
 @app.route('/add-kategori', methods=['POST'])
 @cross_origin()
 def add_kategori():
@@ -179,6 +211,7 @@ def add_kategori():
         return jsonify(query_result), 201
     else:
         return jsonify(query_result), 500
+
 
 @app.route("/kategori", methods=['GET'])
 def kategori():
@@ -193,14 +226,16 @@ def kategori():
             "message": "failed"
         })
 
+
 @app.route('/email-available', methods=['POST'])
 @cross_origin()
 def email_available():
     data = request.json
     query_result = db.email_available(data['email'])
     return jsonify({
-        "email_available": query_result 
+        "email_available": query_result
     })
+
 
 @app.route('/register', methods=['POST'])
 @cross_origin()
@@ -228,6 +263,7 @@ def register():
             'message': message,
         }), 500
 
+
 @app.route('/login', methods=['POST'])
 @cross_origin()
 def login():
@@ -252,7 +288,8 @@ def login():
             'message': 'server error'
         }), 500
 
-# Product view 
+# Product view
+
 
 @app.route('/view-sum/<produk_id>', methods=['GET'])
 def get_view_sum(produk_id):
@@ -262,6 +299,7 @@ def get_view_sum(produk_id):
         'view_sum': view_sum
     })
 
+
 @app.route('/add-view/<produk_id>', methods=['POST'])
 @cross_origin()
 def add_view(produk_id):
@@ -270,6 +308,7 @@ def add_view(produk_id):
         return jsonify(query_result), 200
     else:
         return jsonify(query_result), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
