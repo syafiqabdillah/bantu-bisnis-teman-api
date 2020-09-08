@@ -268,9 +268,9 @@ def search_products(search_query):
                 from users join toko on users.id = toko.user_id
                 join produk on toko.id=produk.toko_id
                 where produk.status='active'
-                and lower(produk.nama) like %s 
+                and (lower(produk.nama) like %s 
                 or lower(toko.nama) like %s 
-                or lower(users.nama) like %s
+                or lower(users.nama) like %s)
                 order by random()
                 limit 20
                 """
