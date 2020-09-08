@@ -242,6 +242,7 @@ def all_products():
                 from users join toko on users.id = toko.user_id
                 join produk on toko.id=produk.toko_id
                 where produk.status='active'
+                and users.active='true'
                 order by random()
                 limit 10
                 """
@@ -267,7 +268,7 @@ def search_products(search_query):
                 select produk.id, produk.nama, produk.harga, produk.imageUrl, toko.nama, toko.id, users.nama 
                 from users join toko on users.id = toko.user_id
                 join produk on toko.id=produk.toko_id
-                where produk.status='active'
+                where produk.status='active' and users.active='true'
                 and (lower(produk.nama) like %s 
                 or lower(toko.nama) like %s 
                 or lower(users.nama) like %s)
@@ -298,6 +299,7 @@ def search_products_by_category(kategori_id):
                 from users join toko on users.id = toko.user_id
                 join produk on toko.id=produk.toko_id
                 where produk.kategori_id=%s
+                and users.active='true'
                 and produk.status='active'
                 order by random()
                 limit 20
