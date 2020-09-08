@@ -54,7 +54,7 @@ def execute_post(query, val):
                 'returning_id': returning_id
             }
         }
-    except Exception as e:
+    except:
         return {
             'message': 'failed'
         }
@@ -64,14 +64,22 @@ def execute_post(query, val):
 
 def get_all_users():
     query = """
-            select * from users
+            select id, nama, email, active from users
             """
     lst = execute_get(query, ())
-    result = []
-    for item in lst:
-        print(item)
-        result.append(item)
+    result = [{
+        'id': user[0],
+        'nama': user[1],
+        'email': user[2],
+        'active': user[3]
+    } for user in lst]
     return result
+
+def update_user(email, active):
+    query = "update users set active=%s where email=%s returning id"
+    value = (active, email)
+    result_query = execute_post(query, value)
+    return result_query
 
 # REGISTER
 
@@ -110,7 +118,7 @@ def create_new_store(user_id):
         value = (user_id,)
         toko_id = execute_post(query, value)
         return toko_id
-    except Exception as e:
+    except:
         return 0
 
 # TOKO
@@ -259,7 +267,8 @@ def search_products(search_query):
                 select produk.id, produk.nama, produk.harga, produk.imageUrl, toko.nama, toko.id, users.nama 
                 from users join toko on users.id = toko.user_id
                 join produk on toko.id=produk.toko_id
-                where lower(produk.nama) like %s 
+                where produk.status='active'
+                and lower(produk.nama) like %s 
                 or lower(toko.nama) like %s 
                 or lower(users.nama) like %s
                 order by random()
@@ -289,6 +298,7 @@ def search_products_by_category(kategori_id):
                 from users join toko on users.id = toko.user_id
                 join produk on toko.id=produk.toko_id
                 where produk.kategori_id=%s
+                and produk.status='active'
                 order by random()
                 limit 20
                 """
