@@ -15,6 +15,19 @@ CORS(app)
 def hello():
     return "Hello, are you trying to hack this ? pls don't"
 
+@app.route('/viewer-stats', methods=['GET'])
+def viewer_stats():
+    try:
+        stats = db.viewer_stats()
+        return jsonify({
+            'data': stats,
+            'message': 'success'
+        }), 200
+    except Exception as e:
+        print(e)
+        return jsonify({
+            'message': 'server error'
+        }), 500
 
 @app.route('/users/<token>', methods=['GET'])
 @cross_origin()

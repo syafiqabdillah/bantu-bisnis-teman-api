@@ -348,6 +348,26 @@ def login(email, password):
             'message': 'failed'
         }
 
+def viewer_stats():
+    query = """
+            select date_trunc('day', ts_series):: date as tanggal
+            ,count(produk_view.id) as jumlah_viewer
+            from generate_series(
+            now()::date - interval '1 week',
+            now()::date,
+            '1 day'::interval) ts_series
+            left outer join produk_view on ts_series::date=produk_view.timestamp::date
+            group by date_trunc('day', ts_series):: date
+            order by tanggal desc;
+            """
+    stats = execute_get(query, ())
+    results = [
+        {
+            "tanggal": item[0].strftime("%Y-%m-%d"),
+            "viewers": item[1]
+        }
+    for item in stats]
+    return results
 
 def get_view_sum(produk_id):
     query = "select count(1) from produk_view where produk_id=%s"
