@@ -145,7 +145,7 @@ def get_toko(user_id):
     query = """
             select * from toko where user_id=%s
             """
-    toko = execute_get(query, (user_id))[0]
+    toko = execute_get(query, (user_id,))[0]
 
     return {
         "nama": toko[2],
