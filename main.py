@@ -252,12 +252,10 @@ def kategori():
             "message": "failed"
         })
 
-@app.route("/update-kategori-status", methods=['POST'])
+@app.route("/update-kategori", methods=['POST'])
 def update_kategori_status():
-    data = request.json
-    kategori_id = data['id']
-    active = data['active']
-    result_query = db.update_kategori(kategori_id, active)
+    new_kategori = request.json
+    result_query = db.update_kategori(new_kategori)
     if result_query['message'] == 'success':
         return jsonify(result_query), 200
     else:

@@ -75,6 +75,7 @@ def get_all_users():
     } for user in lst]
     return result
 
+
 def update_user(email, active):
     query = "update users set active=%s where email=%s returning id"
     value = (active, email)
@@ -181,6 +182,7 @@ def add_kategori(nama):
     kategori = execute_post(query, value)
     return kategori
 
+
 def kategori():
     query = "select * from kategori"
     list_kategori = execute_get(query, ())
@@ -192,6 +194,7 @@ def kategori():
         }
         for kat in list_kategori]
     return objected_list_kategori
+
 
 def active_kategori():
     query = "select * from kategori where active='true'"
@@ -205,9 +208,11 @@ def active_kategori():
         for kat in list_kategori]
     return objected_list_kategori
 
-def update_kategori(kategori_id, active):
-    query = "update kategori set active=%s where id=%s returning id"
-    value = (active, kategori_id)
+
+def update_kategori(new_kategori):
+    query = "update kategori set nama=%s, active=%s where id=%s returning id"
+    value = (new_kategori['nama'], new_kategori['active'],
+             new_kategori['id'])
     result_query = execute_post(query, value)
     return result_query
 
@@ -373,6 +378,7 @@ def login(email, password):
             'message': 'failed'
         }
 
+
 def viewer_stats():
     query = """
             select date_trunc('day', ts_series):: date as tanggal
@@ -391,8 +397,9 @@ def viewer_stats():
             "tanggal": item[0].strftime("%Y-%m-%d"),
             "viewers": item[1]
         }
-    for item in stats]
+        for item in stats]
     return results
+
 
 def get_view_sum(produk_id):
     query = "select count(1) from produk_view where produk_id=%s"
