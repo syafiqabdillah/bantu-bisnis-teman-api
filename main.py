@@ -225,9 +225,8 @@ def add_kategori():
     else:
         return jsonify(query_result), 500
 
-
-@app.route("/kategori", methods=['GET'])
-def kategori():
+@app.route("/all-kategori", methods=['GET'])
+def all_kategori():
     try:
         list_kategori = db.kategori()
         return jsonify({
@@ -239,6 +238,30 @@ def kategori():
             "message": "failed"
         })
 
+
+@app.route("/kategori", methods=['GET'])
+def kategori():
+    try:
+        list_kategori = db.active_kategori()
+        return jsonify({
+            "data": list_kategori,
+            "message": "success"
+        })
+    except:
+        return jsonify({
+            "message": "failed"
+        })
+
+@app.route("/update-kategori-status", methods=['POST'])
+def update_kategori_status():
+    data = request.json
+    kategori_id = data['id']
+    active = data['active']
+    result_query = db.update_kategori(kategori_id, active)
+    if result_query['message'] == 'success':
+        return jsonify(result_query), 200
+    else:
+        return jsonify(result_query), 500
 
 @app.route('/email-available', methods=['POST'])
 @cross_origin()

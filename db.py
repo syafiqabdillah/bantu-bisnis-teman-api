@@ -181,17 +181,35 @@ def add_kategori(nama):
     kategori = execute_post(query, value)
     return kategori
 
-
 def kategori():
     query = "select * from kategori"
     list_kategori = execute_get(query, ())
     objected_list_kategori = [
         {
             'id': kat[0],
-            'nama': kat[1]
+            'nama': kat[1],
+            'active': kat[2]
         }
         for kat in list_kategori]
     return objected_list_kategori
+
+def active_kategori():
+    query = "select * from kategori where active='true'"
+    list_kategori = execute_get(query, ())
+    objected_list_kategori = [
+        {
+            'id': kat[0],
+            'nama': kat[1],
+            'active': kat[2]
+        }
+        for kat in list_kategori]
+    return objected_list_kategori
+
+def update_kategori(kategori_id, active):
+    query = "update kategori set active=%s where id=%s returning id"
+    value = (active, kategori_id)
+    result_query = execute_post(query, value)
+    return result_query
 
 # PRODUCT
 
@@ -241,8 +259,10 @@ def all_products():
                 select produk.id, produk.nama, produk.harga, produk.imageUrl, toko.nama, toko.id, users.nama 
                 from users join toko on users.id = toko.user_id
                 join produk on toko.id=produk.toko_id
+                join kategori on produk.kategori_id=kategori.id
                 where produk.status='active'
                 and users.active='true'
+                and kategori.active='true'
                 order by random()
                 limit 10
                 """
@@ -268,7 +288,10 @@ def search_products(search_query):
                 select produk.id, produk.nama, produk.harga, produk.imageUrl, toko.nama, toko.id, users.nama 
                 from users join toko on users.id = toko.user_id
                 join produk on toko.id=produk.toko_id
-                where produk.status='active' and users.active='true'
+                join kategori on produk.kategori_id=produk.id
+                where produk.status='active' 
+                and kategori.active='true'
+                and users.active='true'
                 and (lower(produk.nama) like %s 
                 or lower(toko.nama) like %s 
                 or lower(users.nama) like %s)
@@ -298,7 +321,9 @@ def search_products_by_category(kategori_id):
                 select produk.id, produk.nama, produk.harga, produk.imageUrl, toko.nama, toko.id, users.nama 
                 from users join toko on users.id = toko.user_id
                 join produk on toko.id=produk.toko_id
+                join kategori on produk.kategori_id=kategori.id
                 where produk.kategori_id=%s
+                and kategori.active='true'
                 and users.active='true'
                 and produk.status='active'
                 order by random()
