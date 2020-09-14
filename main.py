@@ -74,6 +74,19 @@ def toko(user_id):
             'message': 'server error'
         }), 500
 
+@app.route('/view-toko/<toko_id>', methods=['GET'])
+def view_toko(toko_id):
+    try:
+        toko = db.view_toko(toko_id)
+        return jsonify({
+            'data': toko,
+            'message': 'success'
+        }), 200
+    except Exception as e:
+        print(e)
+        return jsonify({
+            'message': 'server error'
+        }), 500
 
 @app.route('/kontak-toko/<toko_id>', methods=['GET'])
 def kontak_toko(toko_id):

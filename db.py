@@ -157,6 +157,21 @@ def get_toko(user_id):
         "instagram": toko[7]
     }
 
+def view_toko(toko_id):
+    query = """
+            select * from toko where id=%s
+            """
+    toko = execute_get(query, (toko_id,))[0]
+
+    return {
+        "nama": toko[2],
+        "alamat": toko[3],
+        "nohp": toko[4],
+        "shopee": toko[5],
+        "tokopedia": toko[6],
+        "instagram": toko[7]
+    }
+
 
 def kontak_toko(toko_id):
     query = """
