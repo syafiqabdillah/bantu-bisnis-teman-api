@@ -54,7 +54,8 @@ def execute_post(query, val):
                 'returning_id': returning_id
             }
         }
-    except:
+    except Exception as e:
+        print(e)
         return {
             'message': 'failed'
         }
@@ -428,6 +429,10 @@ def add_view(produk_id):
     value = (produk_id, datetime.datetime.now())
     return execute_post(query, value)
 
+def add_saran(teks, email):
+    query = "insert into saran(teks, email) values(%s, %s) returning id"
+    value = (teks, email)
+    return execute_post(query, value)
 
 def hash_password(password):
     return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()

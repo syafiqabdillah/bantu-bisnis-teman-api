@@ -15,6 +15,18 @@ CORS(app)
 def hello():
     return "Hello, are you trying to hack this ? pls don't"
 
+@app.route('/add-saran', methods=['POST'])
+@cross_origin()
+def add_saran():
+    data = request.json
+    teks = data['teks']
+    email = data['email']
+    result_query = db.add_saran(teks, email)
+    if result_query['message'] == 'success':
+        return jsonify(result_query), 201
+    else:
+        return jsonify(result_query), 500
+
 @app.route('/viewer-stats', methods=['GET'])
 def viewer_stats():
     try:
