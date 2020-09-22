@@ -71,28 +71,15 @@ def all_products():
         }), 500
 
 
-@produk.route('/search-products/<search_query>', methods=['GET'])
-def search_products(search_query):
-    try:
-        product_list = db.search_products(search_query)
-        return jsonify({
-            'data': product_list,
-            'message': 'success'
-        }), 200
-    except Exception as e:
-        print(e)
-        return jsonify({
-            'message': 'server error'
-        }), 500
-
-
-@produk.route('/search-products-by-category/<kategori_id>', methods=['GET'])
+@produk.route('/search-products-by-category/<kategori_id>', methods=['POST'])
 def search_products_by_category(kategori_id):
+    data = request.json
+    search_query = data['search_query']
     try:
         if kategori_id != "0":
-            product_list = db.search_products_by_category(kategori_id)
+            product_list = db.search_products_by_category(kategori_id, search_query)
         else:
-            product_list = db.all_products()
+            product_list = db.search_products(search_query)
         return jsonify({
             'data': product_list,
             'message': 'success'

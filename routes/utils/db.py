@@ -339,7 +339,7 @@ def search_products(search_query):
         return None
 
 
-def search_products_by_category(kategori_id):
+def search_products_by_category(kategori_id, search_query):
     try:
         query = """
                 select produk.id, produk.nama, produk.harga, produk.imageUrl, toko.nama, toko.id, users.nama 
@@ -350,10 +350,14 @@ def search_products_by_category(kategori_id):
                 and kategori.active='true'
                 and users.active='true'
                 and produk.status='active'
+                and (lower(produk.nama) like %s 
+                or lower(toko.nama) like %s 
+                or lower(users.nama) like %s)
                 order by random()
                 limit 20
                 """
-        products = execute_get(query, (kategori_id, ))
+        search = f'%{search_query.lower()}%'
+        products = execute_get(query, (kategori_id, search, search, search))
         results = [{
             "id": product[0],
             "namaProduk": product[1],
