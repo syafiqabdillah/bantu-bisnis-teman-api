@@ -368,6 +368,14 @@ def add_view(produk_id):
     else:
         return jsonify(query_result), 500
 
+@app.route('/add-ecom-view/<toko_id>', methods=['POST'])
+@cross_origin()
+def add_ecom_view(toko_id):
+    query_result = db.add_ecom_view(toko_id)
+    if query_result['message'] == 'success':
+        return jsonify(query_result), 200
+    else:
+        return jsonify(query_result), 500
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

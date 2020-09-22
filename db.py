@@ -431,6 +431,11 @@ def add_view(produk_id):
     value = (produk_id, datetime.datetime.now())
     return execute_post(query, value)
 
+def add_ecom_view(toko_id):
+    query = "insert into ecom_view(toko_id, timestamp) values (%s, %s) returning id"
+    value = (toko_id, datetime.datetime.now())
+    return execute_post(query, value)
+
 def add_saran(teks, email):
     query = "insert into saran(teks, email) values(%s, %s) returning id"
     value = (teks, email)
