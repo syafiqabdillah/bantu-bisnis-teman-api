@@ -8,6 +8,7 @@ import string
 import random
 import bcrypt
 import time
+import routes.utils.auth as auth
 
 load_dotenv()
 
