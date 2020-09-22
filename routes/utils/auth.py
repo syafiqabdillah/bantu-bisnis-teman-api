@@ -13,11 +13,3 @@ def create_jwt(data):
 
 def read_jwt(encoded_jwt):
     return jwt.decode(encoded_jwt, SECRET, algorithms=['HS256'])
-
-if __name__ == "__main__":
-    jawato = create_jwt({
-        'tes':123,
-        '234': "yiha"
-    })
-    print(jawato)
-    print(read_jwt(jawato))

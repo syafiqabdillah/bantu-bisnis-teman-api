@@ -32,8 +32,6 @@ def execute_get(query, val):
     connection.close()
     return result
 
-# query must include RETURNING ID in the end
-
 
 def execute_post(query, val):
     try:
@@ -112,6 +110,7 @@ def register(nama, email, password):
     except Exception as e:
         return {
             'message': 'failed',
+            'error': str(e)
         }
 
 
@@ -158,6 +157,7 @@ def get_toko(user_id):
         "tokopedia": toko[6],
         "instagram": toko[7]
     }
+
 
 def view_toko(toko_id):
     query = """
@@ -271,7 +271,7 @@ def products(toko_id):
             "kategori_id": product[5]
         } for product in products]
         return results
-    except Exception as e:
+    except:
         return None
 
 
@@ -300,7 +300,7 @@ def all_products():
             "key": product[0] + int(time.time())
         } for product in products]
         return results
-    except Exception as e:
+    except:
         return None
 
 
@@ -365,7 +365,7 @@ def search_products_by_category(kategori_id):
             "key": product[0] + int(time.time())
         } for product in products]
         return results
-    except Exception as e:
+    except:
         return None
 
 # LOGIN
@@ -397,6 +397,8 @@ def login(email, password):
             'message': 'failed'
         }
 
+# VIEW
+
 
 def viewer_stats():
     query = """
@@ -426,6 +428,7 @@ def get_view_sum(produk_id):
     view_sum = execute_get(query, value)[0][0]
     return view_sum
 
+
 def get_ecom_view_sum(toko_id):
     query = "select count(1) from ecom_view where toko_id=%s"
     value = (toko_id, )
@@ -438,15 +441,18 @@ def add_view(produk_id):
     value = (produk_id, datetime.datetime.now())
     return execute_post(query, value)
 
+
 def add_ecom_view(toko_id):
     query = "insert into ecom_view(toko_id, timestamp) values (%s, %s) returning id"
     value = (toko_id, datetime.datetime.now())
     return execute_post(query, value)
 
+
 def add_saran(teks, email):
     query = "insert into saran(teks, email) values(%s, %s) returning id"
     value = (teks, email)
     return execute_post(query, value)
+
 
 def hash_password(password):
     return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
