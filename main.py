@@ -358,6 +358,14 @@ def get_view_sum(produk_id):
         'view_sum': view_sum
     })
 
+@app.route('/ecom-view-sum/<toko_id>', methods=['GET'])
+def get_ecom_view_sum(toko_id):
+    view_sum = db.get_ecom_view_sum(toko_id)
+    return jsonify({
+        'toko_id': toko_id,
+        'view_sum': view_sum
+    })
+
 
 @app.route('/add-view/<produk_id>', methods=['POST'])
 @cross_origin()

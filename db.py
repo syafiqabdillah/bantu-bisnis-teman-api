@@ -425,6 +425,12 @@ def get_view_sum(produk_id):
     view_sum = execute_get(query, value)[0][0]
     return view_sum
 
+def get_ecom_view_sum(toko_id):
+    query = "select count(1) from ecom_view where toko_id=%s"
+    value = (toko_id, )
+    view_sum = execute_get(query, value)[0][0]
+    return view_sum
+
 
 def add_view(produk_id):
     query = "insert into produk_view(produk_id, timestamp) values (%s, %s) returning id"
