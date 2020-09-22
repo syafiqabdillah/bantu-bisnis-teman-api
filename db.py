@@ -309,8 +309,9 @@ def search_products(search_query):
                 select produk.id, produk.nama, produk.harga, produk.imageUrl, toko.nama, toko.id, users.nama 
                 from users join toko on users.id = toko.user_id
                 join produk on toko.id=produk.toko_id
-                join kategori on produk.kategori_id=produk.id
-                where produk.status='active' 
+                join kategori on produk.kategori_id=kategori.id
+                where 
+                produk.status='active' 
                 and kategori.active='true'
                 and users.active='true'
                 and (lower(produk.nama) like %s 
@@ -319,7 +320,7 @@ def search_products(search_query):
                 order by random()
                 limit 20
                 """
-        search = f'%{search_query}%'
+        search = f'%{search_query.lower()}%'
         products = execute_get(query, (search, search, search))
         results = [{
             "id": product[0],
@@ -333,6 +334,7 @@ def search_products(search_query):
         } for product in products]
         return results
     except Exception as e:
+        print(e)
         return None
 
 
