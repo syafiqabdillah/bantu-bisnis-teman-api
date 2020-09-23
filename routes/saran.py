@@ -18,6 +18,7 @@ def add_saran():
     else:
         return jsonify(result_query), 500
 
+
 @saran.route('/saran')
 def get_saran():
     try:
@@ -32,3 +33,16 @@ def get_saran():
             'message': 'server error',
             'error': str(e)
         }), 500
+
+
+@saran.route('/update-saran-status', methods=['POST'])
+@cross_origin()
+def update_saran():
+    data = request.json
+    saran_id = data['id']
+    dibaca = data['dibaca']
+    result_query = db.update_saran(saran_id, dibaca)
+    if result_query['message'] == 'success':
+        return jsonify(result_query), 200
+    else:
+        return jsonify(result_query), 500

@@ -472,6 +472,13 @@ def get_saran():
     return result
 
 
+def update_saran(saran_id, dibaca):
+    query = "update saran set dibaca=%s where id=%s returning id"
+    value = (dibaca, saran_id)
+    result_query = execute_post(query, value)
+    return result_query
+
+
 def hash_password(password):
     return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
 
