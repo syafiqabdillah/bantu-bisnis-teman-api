@@ -198,6 +198,7 @@ def all_toko():
             join users on toko.user_id = users.id
             join produk on produk.toko_id = toko.id
             join kategori on produk.kategori_id = kategori.id
+            where users.active='true'
             """
     lst = execute_get(query, ())
     result = {} # key toko_id ;value id, nama toko, nama user, list kategori;
