@@ -190,6 +190,29 @@ def kontak_toko(toko_id):
         "instagram": detail[7]
     }
 
+
+def all_toko():
+    query = """
+            select distinct toko.id as toko_id, toko.nama as nama_toko, users.nama as nama_user, kategori.nama as kategori
+            from toko 
+            join users on toko.user_id = users.id
+            join produk on produk.toko_id = toko.id
+            join kategori on produk.kategori_id = kategori.id
+            """
+    lst = execute_get(query, ())
+    result = {} # key toko_id ;value id, nama toko, nama user, list kategori;
+    for toko in lst:
+        if toko[0] not in result.keys():
+            result[toko[0]] = {
+                "id": toko[0],
+                "nama_toko": toko[1],
+                "nama_user": toko[2],
+                "list_kategori": [toko[3]]
+            }
+        else:
+            result[toko[0]]['list_kategori'].append(toko[3])
+    return result 
+
 # KATEGORI
 
 

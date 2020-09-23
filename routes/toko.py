@@ -92,3 +92,11 @@ def add_ecom_view(toko_id):
         return jsonify(query_result), 200
     else:
         return jsonify(query_result), 500
+
+
+@toko.route('/toko', methods=['GET'])
+def all_toko():
+    list_toko = db.all_toko()
+    return jsonify({
+        'list_toko': list_toko
+    })
