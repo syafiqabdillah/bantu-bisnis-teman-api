@@ -17,3 +17,18 @@ def add_saran():
         return jsonify(result_query), 201
     else:
         return jsonify(result_query), 500
+
+@saran.route('/saran')
+def get_saran():
+    try:
+        saran_list = db.get_saran()
+        return jsonify({
+            'data': saran_list,
+            'message': 'success'
+        }), 200
+    except Exception as e:
+        print(e)
+        return jsonify({
+            'message': 'server error',
+            'error': str(e)
+        }), 500

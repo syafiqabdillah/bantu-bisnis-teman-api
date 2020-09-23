@@ -249,7 +249,7 @@ def add_product(toko_id, kategori_id, nama, harga, imageUrl):
 def update_product(produk_id, nama, kategori_id, harga, imageUrl, status):
     query = """
             update produk set nama=%s, kategori_id=%s, harga=%s, imageUrl=%s, status=%s
-            where id=%s returning id 
+            where id=%s returning id
             """
     value = (nama, kategori_id, harga, imageUrl, status, produk_id)
     query_result = execute_post(query, value)
@@ -278,7 +278,7 @@ def products(toko_id):
 def all_products():
     try:
         query = """
-                select produk.id, produk.nama, produk.harga, produk.imageUrl, toko.nama, toko.id, users.nama 
+                select produk.id, produk.nama, produk.harga, produk.imageUrl, toko.nama, toko.id, users.nama
                 from users join toko on users.id = toko.user_id
                 join produk on toko.id=produk.toko_id
                 join kategori on produk.kategori_id=kategori.id
@@ -307,16 +307,16 @@ def all_products():
 def search_products(search_query):
     try:
         query = """
-                select produk.id, produk.nama, produk.harga, produk.imageUrl, toko.nama, toko.id, users.nama 
+                select produk.id, produk.nama, produk.harga, produk.imageUrl, toko.nama, toko.id, users.nama
                 from users join toko on users.id = toko.user_id
                 join produk on toko.id=produk.toko_id
                 join kategori on produk.kategori_id=kategori.id
-                where 
-                produk.status='active' 
+                where
+                produk.status='active'
                 and kategori.active='true'
                 and users.active='true'
-                and (lower(produk.nama) like %s 
-                or lower(toko.nama) like %s 
+                and (lower(produk.nama) like %s
+                or lower(toko.nama) like %s
                 or lower(users.nama) like %s)
                 order by random()
                 limit 20
@@ -342,7 +342,7 @@ def search_products(search_query):
 def search_products_by_category(kategori_id, search_query):
     try:
         query = """
-                select produk.id, produk.nama, produk.harga, produk.imageUrl, toko.nama, toko.id, users.nama 
+                select produk.id, produk.nama, produk.harga, produk.imageUrl, toko.nama, toko.id, users.nama
                 from users join toko on users.id = toko.user_id
                 join produk on toko.id=produk.toko_id
                 join kategori on produk.kategori_id=kategori.id
@@ -350,8 +350,8 @@ def search_products_by_category(kategori_id, search_query):
                 and kategori.active='true'
                 and users.active='true'
                 and produk.status='active'
-                and (lower(produk.nama) like %s 
-                or lower(toko.nama) like %s 
+                and (lower(produk.nama) like %s
+                or lower(toko.nama) like %s
                 or lower(users.nama) like %s)
                 order by random()
                 limit 20
@@ -451,11 +451,25 @@ def add_ecom_view(toko_id):
     value = (toko_id, datetime.datetime.now())
     return execute_post(query, value)
 
+# SARAN
+
 
 def add_saran(teks, email):
     query = "insert into saran(teks, email) values(%s, %s) returning id"
     value = (teks, email)
     return execute_post(query, value)
+
+
+def get_saran():
+    query = "select * from saran"
+    lst = execute_get(query, ())
+    result = [{
+        'id': saran[0],
+        'teks': saran[1],
+        'dibaca': saran[2],
+        'email': saran[3]
+    } for saran in lst]
+    return result
 
 
 def hash_password(password):
