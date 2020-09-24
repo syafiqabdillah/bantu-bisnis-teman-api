@@ -331,7 +331,7 @@ def all_products():
 def search_products(search_query):
     try:
         query = """
-                select produk.id, produk.nama, produk.harga, produk.imageUrl, toko.nama, toko.id, users.nama
+                select produk.id, produk.nama, produk.harga, produk.imageUrl, toko.nama, toko.id, users.nama, toko.tokopedia, toko.shopee, toko.instagram
                 from users join toko on users.id = toko.user_id
                 join produk on toko.id=produk.toko_id
                 join kategori on produk.kategori_id=kategori.id
@@ -355,6 +355,9 @@ def search_products(search_query):
             "namaToko": product[4],
             "idToko": product[5],
             "namaSeller": product[6],
+            "tokopedia": product[7],
+            "shopee": product[8],
+            "instagram": product[9],
             "key": product[0] + int(time.time())
         } for product in products]
         return results
@@ -366,7 +369,7 @@ def search_products(search_query):
 def search_products_by_category(kategori_id, search_query):
     try:
         query = """
-                select produk.id, produk.nama, produk.harga, produk.imageUrl, toko.nama, toko.id, users.nama
+                select produk.id, produk.nama, produk.harga, produk.imageUrl, toko.nama, toko.id, users.nama, toko.tokopedia, toko.shopee, toko.instagram
                 from users join toko on users.id = toko.user_id
                 join produk on toko.id=produk.toko_id
                 join kategori on produk.kategori_id=kategori.id
@@ -390,6 +393,9 @@ def search_products_by_category(kategori_id, search_query):
             "namaToko": product[4],
             "idToko": product[5],
             "namaSeller": product[6],
+            "tokopedia": product[7],
+            "shopee": product[8],
+            "instagram": product[9],
             "key": product[0] + int(time.time())
         } for product in products]
         return results
