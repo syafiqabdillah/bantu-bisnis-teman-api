@@ -72,6 +72,7 @@ def all_products():
 
 
 @produk.route('/search-products-by-category/<kategori_id>', methods=['POST'])
+@cross_origin()
 def search_products_by_category(kategori_id):
     data = request.json
     search_query = data['search_query']
