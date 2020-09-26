@@ -22,7 +22,10 @@ CORS(app)
 
 @app.route('/', methods=['GET'])
 def hello():
-    return "Pls no"
+    return jsonify({
+        'msg': "pls no hak",
+        "your_ip": request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    }), 200
 
 
 # @app.route('/viewer-stats', methods=['GET'])
