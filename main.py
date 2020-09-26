@@ -24,7 +24,8 @@ CORS(app)
 def hello():
     return jsonify({
         'msg': "pls no hak",
-        "your_ip": request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+        "public_ip": request.remote_addr,
+        "deep_ip": request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     }), 200
 
 
