@@ -70,6 +70,19 @@ def all_products():
             'error': str(e)
         }), 500
 
+@produk.route('/detail-product/<produk_id>')
+def detail_product(produk_id):
+    try:
+        detail = db.detail_product(produk_id)
+        return jsonify({
+            'data': detail,
+            'message': 'success'
+        }), 200
+    except Exception as e:
+        print(e)
+        return jsonify({
+            'message': 'server error'
+        }), 500
 
 @produk.route('/search-products-by-category/<kategori_id>', methods=['POST'])
 @cross_origin()

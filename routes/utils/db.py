@@ -327,6 +327,33 @@ def all_products():
     except:
         return None
 
+def detail_product(produk_id):
+    try:
+        query = """
+                select produk.id, produk.nama, produk.harga, produk.imageUrl, toko.nama, toko.id, users.nama, toko.tokopedia, toko.shopee, toko.instagram
+                from users join toko on users.id = toko.user_id
+                join produk on toko.id=produk.toko_id
+                join kategori on produk.kategori_id=kategori.id
+                where produk.id=%s
+                """
+        products = execute_get(query, (produk_id,))
+        results = [{
+            "id": product[0],
+            "namaProduk": product[1],
+            "harga": str(product[2]),
+            "imageUrl": product[3],
+            "namaToko": product[4],
+            "idToko": product[5],
+            "namaSeller": product[6],
+            "tokopedia": product[7],
+            "shopee": product[8],
+            "instagram": product[9],
+            "key": product[0] + int(time.time())
+        } for product in products]
+        return results[0]
+    except Exception as e:
+        print(e)
+        return None
 
 def search_products(search_query):
     try:
