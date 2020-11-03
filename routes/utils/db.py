@@ -82,6 +82,12 @@ def update_user(email, active):
     result_query = execute_post(query, value)
     return result_query
 
+def user_is_active(user_id):
+    query = "select active from users where id=%s"
+    value = (user_id, )
+    result_query = execute_get(query, value)[0][0]
+    return result_query
+
 # REGISTER
 
 

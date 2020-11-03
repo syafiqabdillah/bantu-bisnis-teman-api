@@ -99,3 +99,12 @@ def update_user():
         return jsonify(result_query), 200
     else:
         return jsonify(result_query), 500
+
+@user.route('/user-is-active/<user_id>')
+def user_is_active(user_id):
+    result_query = db.user_is_active(user_id)
+    return jsonify({
+        'data': {
+            'is_active': result_query
+        }
+    }), 200
